@@ -2,16 +2,27 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title></title>
+    <title>V2LP</title>
 </head>
 <body>
-    asdf
+    <!-- <video controls="controls" height="200px">
+        <source src="FortNine%20Explore%20%20Official%20Trailer%20[HD].mp4" type="video/mp4" />
+    </video>
 
     <audio controls="controls">
         <source src="Mission_Start.mp3" type="audio/mpeg" />
     </audio>
     <audio controls="controls">
-        <source src="Move_Out.mp3" type="audio/mpeg" />
-    </audio>    
+        <source src="Move_Out.mp3" type="audio/mpeg" /> -->
+    </audio>
+
+    <div id="v2lp"></div>
+
+    <script src="framework/model.js" ></script>
+    <script src="framework/v2lp.js" ></script>
+
+    <script>
+        var v2lp = new V2LP("v2lp", 'FortNine%20Explore%20%20Official%20Trailer%20[HD].mp4', 'Mission_Start.mp3');
+    </script>
 </body>
 </html>
