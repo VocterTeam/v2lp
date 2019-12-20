@@ -1,10 +1,16 @@
 class Player {
     constructor(div, vidSrc, audSrc, width = 640, height = 480) {
+        var self = this;
         this.container = document.createElement("div");
-        div.appendChild(this.container);
         this.video = new Video(vidSrc, width, height);
-        this.container.appendChild(this.video.element);
         this.audio = new VAudio(audSrc);
+        this.progress = new Progress();
+        this.video.element.onloadedmetadata = function () {
+            self.progress.duration = self.video.element.duration;
+        };
+        div.appendChild(this.container);
+        this.container.appendChild(this.video.element);
+        this.container.appendChild(this.progress.element);
         this.container.appendChild(this.audio.element);
     }
     get VideoVolume() {
@@ -38,11 +44,20 @@ class Player {
         this.video.stop();
         this.audio.stop();
     }
+    get duration() {
+        return this.video.element.duration;
+    }
     get onTimeUpdate() {
-        return this.video.onTimeupdate;
+        return this.onTimeUpdateExternalHandler;
+        // return this.video.onTimeupdate;
     }
     set onTimeUpdate(onTimeUpdate) {
-        this.video.onTimeupdate = onTimeUpdate;
+        this.onTimeUpdateExternalHandler = onTimeUpdate;
+        var self = this;
+        var videoOnTimeupdateHandler = function (ev) {
+            self.onTimeUpdateExternalHandler(self.video.currentTime);
+        };
+        this.video.onTimeupdate = videoOnTimeupdateHandler;
     }
 }
 class Media {
@@ -88,6 +103,15 @@ class VAudio extends Media {
         super(src);
         this.element = document.createElement("audio");
         this.element.appendChild(this.source);
+    }
+}
+class Progress {
+    constructor() {
+        this.element = document.createElement("progress");
+        this.element.value = 0;
+    }
+    set duration(duration) {
+        this.element.max = duration;
     }
 }
 //# sourceMappingURL=model.js.map

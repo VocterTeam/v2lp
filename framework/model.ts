@@ -1,16 +1,25 @@
 class Player {
-    container: HTMLDivElement;
-    video: Video;
-    audio: VAudio;
+    private container: HTMLDivElement;
+    private video: Video;
+    private audio: VAudio;
+    private progress: Progress;
 
     constructor(div: HTMLDivElement, vidSrc: string, audSrc: string, width: number = 640, height: number = 480) {
+        var self = this;
+
         this.container = document.createElement("div");
-        div.appendChild(this.container);
-
         this.video = new Video(vidSrc, width, height);
-        this.container.appendChild(this.video.element);
-
         this.audio = new VAudio(audSrc);
+        this.progress = new Progress();
+
+        this.video.element.onloadedmetadata = function () {
+            self.progress.duration = self.video.element.duration;
+            
+        }
+
+        div.appendChild(this.container);
+        this.container.appendChild(this.video.element);
+        this.container.appendChild(this.progress.element)
         this.container.appendChild(this.audio.element);
     }
 
@@ -51,11 +60,26 @@ class Player {
         this.audio.stop();
     }
 
-    get onTimeUpdate(): (this: GlobalEventHandlers, ev: Event) => any {
-        return this.video.onTimeupdate;
+    get duration(): number {
+        return this.video.element.duration;
     }
-    set onTimeUpdate(onTimeUpdate: (this: GlobalEventHandlers, ev: Event) => any) {
-        this.video.onTimeupdate = onTimeUpdate;
+
+    private onTimeUpdateExternalHandler: (time: number) => any
+
+    get onTimeUpdate(): (time: number) => any {
+        return this.onTimeUpdateExternalHandler;
+        // return this.video.onTimeupdate;
+    }
+    set onTimeUpdate(onTimeUpdate: (time: number) => any) {
+        this.onTimeUpdateExternalHandler = onTimeUpdate;
+
+        var self = this;
+
+        var videoOnTimeupdateHandler = function (this: GlobalEventHandlers, ev: Event) {
+            self.onTimeUpdateExternalHandler(self.video.currentTime);
+        };
+
+        this.video.onTimeupdate = videoOnTimeupdateHandler;
     }
 }
 
@@ -116,5 +140,17 @@ class VAudio extends Media {
         this.element = document.createElement("audio");
         this.element.appendChild(this.source);
 
+    }
+}
+class Progress {
+    element: HTMLProgressElement;
+
+    constructor() {
+        this.element = document.createElement("progress");
+        this.element.value = 0;
+    }
+
+    set duration(duration: number) {
+        this.element.max = duration;
     }
 }

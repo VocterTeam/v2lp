@@ -1,22 +1,4 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>V2LP</title>
-</head>
-<body>
-    </audio>
-
-    <div id="v2lp"></div>
-
-    <script src="framework/model.js" ></script>
-    <script src="framework/v2lp.js" ></script>
-
-    <script>
-        var v2lp = new V2LP("v2lp",
-        'Плохой Санта.mp4',
-        'Плохой Санта.mp3',
-        `1
+1
 00:01:28,865 --> 00:01:31,800
 Э, можно мне ещё налить?
 
@@ -6176,7 +6158,3 @@
 перевод:
 Goblin
 
-`);
-    </script>
-</body>
-</html>
