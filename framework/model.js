@@ -2,9 +2,7 @@ class Player {
     constructor(div, vidSrc, audSrc, width = 640, height = 480) {
         this.container = document.createElement("div");
         div.appendChild(this.container);
-        this.video = new Video(vidSrc);
-        this.video.element.width = width;
-        this.video.element.height = height;
+        this.video = new Video(vidSrc, width, height);
         this.container.appendChild(this.video.element);
         this.audio = new VAudio(audSrc);
         this.container.appendChild(this.audio.element);
@@ -21,6 +19,13 @@ class Player {
     set audioVolume(value) {
         this.audio.element.volume = value;
     }
+    get currentTime() {
+        return this.video.currentTime;
+    }
+    set currentTime(timeStamp) {
+        this.video.currentTime = timeStamp;
+        this.audio.currentTime = timeStamp;
+    }
     play() {
         this.video.play();
         this.audio.play();
@@ -32,6 +37,12 @@ class Player {
     stop() {
         this.video.stop();
         this.audio.stop();
+    }
+    get onTimeUpdate() {
+        return this.video.onTimeupdate;
+    }
+    set onTimeUpdate(onTimeUpdate) {
+        this.video.onTimeupdate = onTimeUpdate;
     }
 }
 class Media {
@@ -49,11 +60,26 @@ class Media {
         this.element.pause();
         this.element.currentTime = 0;
     }
+    get currentTime() {
+        return this.element.currentTime;
+    }
+    set currentTime(timeStamp) {
+        this.element.currentTime = timeStamp;
+    }
+    get onTimeupdate() {
+        return this.element.ontimeupdate;
+    }
+    set onTimeupdate(onTimeUpdate) {
+        this.element.ontimeupdate = onTimeUpdate;
+    }
 }
 class Video extends Media {
-    constructor(src) {
+    constructor(src, width, height, onTimeUpdate = null) {
         super(src);
         this.element = document.createElement("video");
+        this.element.width = width;
+        this.element.height = height;
+        this.element.ontimeupdate = onTimeUpdate;
         this.element.appendChild(this.source);
     }
 }
