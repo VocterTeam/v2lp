@@ -4,11 +4,11 @@ class Player {
     private audio: VAudio;
     private progress: Progress;
 
-    constructor(div: HTMLDivElement, vidSrc: string, audSrc: string, width: number = 640, height: number = 480) {
+    constructor(div: HTMLDivElement, vidSrc: string, audSrc: string, height: number = 480) {
         var self = this;
 
         this.container = document.createElement("div");
-        this.video = new Video(vidSrc, width, height);
+        this.video = new Video(vidSrc, height);
         this.audio = new VAudio(audSrc);
         this.progress = new Progress();
 
@@ -21,6 +21,8 @@ class Player {
         this.container.appendChild(this.video.element);
         this.container.appendChild(this.progress.element)
         this.container.appendChild(this.audio.element);
+
+        
     }
 
     get VideoVolume(): number {
@@ -81,6 +83,13 @@ class Player {
 
         this.video.onTimeupdate = videoOnTimeupdateHandler;
     }
+    
+    get height(): number{
+        return this.video.element.height;
+    }
+    set height(height: number) {
+        this.video.element.height = height;
+    }
 }
 
 class Media {
@@ -122,10 +131,9 @@ class Media {
 class Video extends Media {
     element: HTMLVideoElement;
 
-    constructor(src: string, width: number, height: number, onTimeUpdate: (this: GlobalEventHandlers, ev: Event) => any = null) {
+    constructor(src: string, height: number, onTimeUpdate: (this: GlobalEventHandlers, ev: Event) => any = null) {
         super(src);
         this.element = document.createElement("video");
-        this.element.width = width;
         this.element.height = height;
         this.element.ontimeupdate = onTimeUpdate;
         this.element.appendChild(this.source);

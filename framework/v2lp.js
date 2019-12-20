@@ -2,8 +2,8 @@ class V2LP {
     constructor(div, vidSrc, audSrc, subtitlesStr = null) {
         this.currentTimeStampIndex = 0;
         var self = this;
-        var divBlock = document.getElementById(div);
-        this.player = new Player(divBlock, vidSrc, audSrc);
+        this.container = document.getElementById(div);
+        this.player = new Player(this.container, vidSrc, audSrc);
         this.languagesMixer = document.createElement("input");
         this.languagesMixer.type = 'range';
         this.languagesMixer.min = '0';
@@ -55,10 +55,16 @@ class V2LP {
                 self.player.currentTime = self.timeStamps[self.currentTimeStampIndex + 1];
             }
         };
-        divBlock.appendChild(this.languagesMixer);
-        divBlock.appendChild(this.playButton);
-        divBlock.appendChild(this.prevStampButton);
-        divBlock.appendChild(this.nextStampButton);
+        this.fullScreenButton = document.createElement('button');
+        this.fullScreenButton.innerText = "Full Screen";
+        this.fullScreenButton.onclick = function (ev) {
+            self.requestFullScreen(self.container);
+        };
+        this.container.appendChild(this.languagesMixer);
+        this.container.appendChild(this.playButton);
+        this.container.appendChild(this.prevStampButton);
+        this.container.appendChild(this.nextStampButton);
+        this.container.appendChild(this.fullScreenButton);
     }
     set languagesLevels(valueStr) {
         var value = Number.parseFloat(valueStr);
@@ -71,6 +77,32 @@ class V2LP {
             this.player.audioVolume = value * 2;
         }
         this.player.audioVolume = value;
+    }
+    requestFullScreen(element) {
+        // Supports most browsers and their versions.
+        var requestMethod = element.requestFullscreen || element["webkitRequestFullScreen"] || element['mozRequestFullScreen'] || element['msRequestFullScreen'];
+        if (requestMethod) { // Native full screen.
+            requestMethod.call(element);
+        }
+        else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+            var wscript = new ActiveXObject("WScript.Shell");
+            if (wscript !== null) {
+                wscript.SendKeys("{F11}");
+            }
+        }
+        var self = this;
+        element.onfullscreenchange = function (ev) {
+            if (!document.fullscreenElement) {
+                self.player.height = self.notFullScreenHeight;
+            }
+        };
+        setTimeout(() => {
+            this.notFullScreenHeight = this.player.height;
+            this.player.height = this.container.scrollHeight - 54;
+            //this.player.width = '100%';
+            console.log('divBlock.scrollHeight = ' + this.container.scrollHeight);
+            console.log('self.player.height = ' + this.player.height);
+        }, 150);
     }
 }
 //# sourceMappingURL=v2lp.js.map

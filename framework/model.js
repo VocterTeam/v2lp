@@ -1,8 +1,8 @@
 class Player {
-    constructor(div, vidSrc, audSrc, width = 640, height = 480) {
+    constructor(div, vidSrc, audSrc, height = 480) {
         var self = this;
         this.container = document.createElement("div");
-        this.video = new Video(vidSrc, width, height);
+        this.video = new Video(vidSrc, height);
         this.audio = new VAudio(audSrc);
         this.progress = new Progress();
         this.video.element.onloadedmetadata = function () {
@@ -59,6 +59,12 @@ class Player {
         };
         this.video.onTimeupdate = videoOnTimeupdateHandler;
     }
+    get height() {
+        return this.video.element.height;
+    }
+    set height(height) {
+        this.video.element.height = height;
+    }
 }
 class Media {
     constructor(src) {
@@ -89,10 +95,9 @@ class Media {
     }
 }
 class Video extends Media {
-    constructor(src, width, height, onTimeUpdate = null) {
+    constructor(src, height, onTimeUpdate = null) {
         super(src);
         this.element = document.createElement("video");
-        this.element.width = width;
         this.element.height = height;
         this.element.ontimeupdate = onTimeUpdate;
         this.element.appendChild(this.source);
