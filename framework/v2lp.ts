@@ -110,32 +110,35 @@ class V2LP {
 
     requestFullScreen(element: Element) {
         // Supports most browsers and their versions.
-        var requestMethod = element.requestFullscreen || element["webkitRequestFullScreen"] || element['mozRequestFullScreen'] || element['msRequestFullScreen'];
+        if (!document.fullscreenElement) {
 
-        if (requestMethod) { // Native full screen.
-            requestMethod.call(element);
-        } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
-            var wscript = new ActiveXObject("WScript.Shell");
-            if (wscript !== null) {
-                wscript.SendKeys("{F11}");
+            var requestMethod = element.requestFullscreen || element["webkitRequestFullScreen"] || element['mozRequestFullScreen'] || element['msRequestFullScreen'];
+
+            if (requestMethod) { // Native full screen.
+                requestMethod.call(element);
+            } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+                var wscript = new ActiveXObject("WScript.Shell");
+                if (wscript !== null) {
+                    wscript.SendKeys("{F11}");
+                }
             }
+
+            var self = this;
+            element.onfullscreenchange = function (this: Element, ev: Event) {
+                if (!document.fullscreenElement) {
+                    self.player.height = self.notFullScreenHeight;
+                }
+            };
+
+            setTimeout(() => {
+                this.notFullScreenHeight = this.player.height;
+
+                this.player.height = this.container.scrollHeight - 54;
+                //this.player.width = '100%';
+
+                console.log('divBlock.scrollHeight = ' + this.container.scrollHeight);
+                console.log('self.player.height = ' + this.player.height);
+            }, 150);
         }
-
-        var self = this;
-        element.onfullscreenchange = function (this: Element, ev: Event) {
-            if (!document.fullscreenElement) {
-                self.player.height = self.notFullScreenHeight;
-            }
-        };
-
-        setTimeout(() => {
-            this.notFullScreenHeight = this.player.height;
-
-            this.player.height = this.container.scrollHeight - 54;
-            //this.player.width = '100%';
-
-            console.log('divBlock.scrollHeight = ' + this.container.scrollHeight);
-            console.log('self.player.height = ' + this.player.height);
-        }, 150);
     }
 }
